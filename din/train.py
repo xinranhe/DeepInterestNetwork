@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 import sys
 from input import DataInput, DataInputTest
-from model import Model
+from model_bert import Model
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 random.seed(1234)
