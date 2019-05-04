@@ -46,22 +46,13 @@ class Model(object):
 
     hist_i =attention(i_emb, h_emb, self.sl)
     hist_i = tf.reshape(hist_i, [-1, hidden_units])
-    print hist_i.shape
     #-- attention end ---
-    
-    hist_i = tf.layers.batch_normalization(inputs = hist_i)
-    hist_i = tf.reshape(hist_i, [-1, hidden_units], name='hist_bn')
-    hist_i = tf.layers.dense(hist_i, hidden_units, name='hist_fcn')
 
     u_emb_i = hist_i
     
     hist_j =attention(j_emb, h_emb, self.sl)
     hist_j = tf.reshape(hist_j, [-1, hidden_units])
     #-- attention end ---
-    
-    hist_j = tf.layers.batch_normalization(inputs = hist_j)
-    hist_j = tf.reshape(hist_j, [-1, hidden_units], name='hist_bn')
-    hist_j = tf.layers.dense(hist_j, hidden_units, name='hist_fcn', reuse=True)
 
     u_emb_j = hist_j
     print u_emb_i.get_shape().as_list()
@@ -150,9 +141,9 @@ class Model(object):
 
 def attention(queries, keys, keys_length):
   params = {
-    "layer_postprocess_dropout": 0.0,
-    "attention_dropout": 0.0,
-    "relu_dropout": 0.0,
+    "layer_postprocess_dropout": 0.2,
+    "attention_dropout": 0.2,
+    "relu_dropout": 0.2,
     "hidden_size": 128,
     "num_hidden_layers": 3,
     "num_heads": 4,

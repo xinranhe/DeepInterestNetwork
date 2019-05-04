@@ -7,27 +7,27 @@ _NEG_INF = -1e9
 
 
 def transformer_embedding(queries, keys, keys_length, params, train):
-    queries_hidden_units = queries.get_shape().as_list()[-1]
-    with tf.variable_scope("sep_emb", reuse=tf.AUTO_REUSE):
-        sep_emb = tf.get_variable("sep_emb_w", [1, queries_hidden_units])
-    sep_emb = tf.transpose(tf.ones_like(queries) * tf.expand_dims(sep_emb, axis=0), [1, 0, 2])
-    input_seq = tf.concat([tf.expand_dims(queries, axis=1),
-                           sep_emb,
-                           keys], axis=1)
+    with tf.variable_scope("transformer", reuse=tf.AUTO_REUSE):
+      queries_hidden_units = queries.get_shape().as_list()[-1]
+      sep_emb = tf.get_variable("sep_emb_w", [1, queries_hidden_units])
+      sep_emb = tf.transpose(tf.ones_like(queries) * tf.expand_dims(sep_emb, axis=0), [1, 0, 2])
+      input_seq = tf.concat([tf.expand_dims(queries, axis=1),
+                             sep_emb,
+                             keys], axis=1)
 
-    max_len = tf.shape(keys)[1]
-    queries_nums = queries.get_shape().as_list()[1]
-    key_masks = tf.sequence_mask(keys_length, max_len)  # [B, T]
-    key_masks = tf.concat([tf.expand_dims(tf.ones_like(keys_length), axis=1), 
-                           tf.expand_dims(tf.zeros_like(keys_length), axis=1), 
-                           tf.to_int32(key_masks)], axis=1)
-    key_masks = 1.0 - tf.to_float(key_masks)
-    bias_seq = key_masks * _NEG_INF
-    bias_seq = tf.expand_dims(tf.expand_dims(bias_seq, axis=1), axis=1)
+      max_len = tf.shape(keys)[1]
+      queries_nums = queries.get_shape().as_list()[1]
+      key_masks = tf.sequence_mask(keys_length, max_len)  # [B, T]
+      key_masks = tf.concat([tf.expand_dims(tf.ones_like(keys_length), axis=1), 
+                             tf.expand_dims(tf.zeros_like(keys_length), axis=1), 
+                             tf.to_int32(key_masks)], axis=1)
+      key_masks = 1.0 - tf.to_float(key_masks)
+      bias_seq = key_masks * _NEG_INF
+      bias_seq = tf.expand_dims(tf.expand_dims(bias_seq, axis=1), axis=1)
 
-    encoder_stack = EncoderStack(params, train)
-    encoder_outputs = encoder_stack(input_seq, bias_seq, key_masks)
-    return tf.squeeze(encoder_outputs[:, 0, :])
+      encoder_stack = EncoderStack(params, train)
+      encoder_outputs = encoder_stack(input_seq, bias_seq, key_masks)
+      return tf.squeeze(encoder_outputs[:, 0, :])
 
 
 class LayerNormalization(tf.layers.Layer):

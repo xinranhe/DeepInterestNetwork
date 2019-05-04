@@ -106,7 +106,7 @@ with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 
   print('test_gauc: %.4f\t test_auc: %.4f' % _eval(sess, model))
   sys.stdout.flush()
-  lr = 1.0
+  lr = 0.1
   start_time = time.time()
   for _ in range(50):
 
